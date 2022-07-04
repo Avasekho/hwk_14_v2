@@ -28,6 +28,7 @@ resource "aws_instance" "build_server" {
     private_key = file("/home/avasekho/us-east-1-key.pem")
     host     = self.public_ip
   }
+  
     provisioner "remote-exec" {
       inline = [
         "sudo apt update -y",
@@ -65,6 +66,7 @@ resource "aws_instance" "prod_server" {
     private_key = file("/home/avasekho/us-east-1-key.pem")
     host     = self.public_ip
   }
+
   provisioner "remote-exec" {
     inline = [
       "sudo apt update -y",
