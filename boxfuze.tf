@@ -16,7 +16,6 @@ resource "aws_instance" "build_server" {
   instance_type          = "t2.micro"
   key_name               = "us-east-1-key"
   vpc_security_group_ids = [aws_security_group.open_port_22_8080.id]
-  depends_on             = [aws_s3_bucket.bucket]
   iam_instance_profile   = "aws-ec2-s3-bucket-access"
 
   tags = {
@@ -48,7 +47,7 @@ resource "aws_instance" "prod_server" {
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.open_port_22_8080.id]
   key_name               = "us-east-1-key"
-  depends_on             = [aws_s3_bucket.bucket, aws_instance.build_server]
+  depends_on             = [aws_instance.build_server]
   iam_instance_profile   = "aws-ec2-s3-bucket-access"
 
   tags = {
@@ -64,7 +63,7 @@ resource "aws_instance" "prod_server" {
 
     provisioner "file" {
     source      = "provision_prod.sh"
-    destination = "/tmp/provision_build.sh"
+    destination = "/tmp/provision_prod.sh"
   }
   provisioner "remote-exec" {
   inline = [
