@@ -17,11 +17,30 @@ resource "aws_instance" "build_server" {
   key_name               = "us-east-1-key"
   vpc_security_group_ids = [aws_security_group.open_port_22_8080.id]
   depends_on             = [aws_s3_bucket.bucket]
-  user_data              = file("provision_build.sh")
+  iam_instance_profile   = "aws-ec2-s3-bucket-access"
 
   tags = {
     Name = "Build Server"
   }
+
+  connection {
+    type     = "ssh"
+    user     = "ubuntu"
+    private_key = file("/home/avasekho/us-east-1-key.pem")
+    host     = self.public_ip
+  }
+
+    provisioner "file" {
+    source      = "provision_build.sh"
+    destination = "/tmp/provision_build.sh"
+  }
+    provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/provision_build.sh",
+      "/tmp/provision_build.sh",
+    ]
+  }
+
 }
 
 resource "aws_instance" "prod_server" {
@@ -30,19 +49,30 @@ resource "aws_instance" "prod_server" {
   vpc_security_group_ids = [aws_security_group.open_port_22_8080.id]
   key_name               = "us-east-1-key"
   depends_on             = [aws_s3_bucket.bucket, aws_instance.build_server]
-  user_data              = file("provision_prod.sh")
+  iam_instance_profile   = "aws-ec2-s3-bucket-access"
 
   tags = {
     Name = "Prod Server"
   }
-}
 
-resource "aws_s3_bucket" "bucket" {
-  bucket = "boxfuze.avasekho.test"
-
-  tags = {
-    Name = "boxfuze bucket"
+  connection {
+    type     = "ssh"
+    user     = "ubuntu"
+    private_key = file("/home/avasekho/us-east-1-key.pem")
+    host     = self.public_ip
   }
+
+    provisioner "file" {
+    source      = "provision_prod.sh"
+    destination = "/tmp/provision_build.sh"
+  }
+  provisioner "remote-exec" {
+  inline = [
+    "chmod +x /tmp/provision_prod.sh",
+    "/tmp/provision_prod.sh",
+    ]
+  }
+
 }
 
 resource "aws_security_group" "open_port_22_8080" {
