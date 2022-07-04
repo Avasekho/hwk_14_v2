@@ -32,6 +32,7 @@ resource "aws_instance" "build_server" {
     provisioner "remote-exec" {
       inline = [
         "sudo apt update",
+        "sudo apt update",
         "sudo apt install -y maven default-jdk awscli",
         "mkdir -p /home/ubuntu/.ssh/",
         "aws s3 cp s3://avasekho.test.credentials/id_rsa /home/ubuntu/.ssh/id_rsa",
@@ -69,6 +70,7 @@ resource "aws_instance" "prod_server" {
 
   provisioner "remote-exec" {
     inline = [
+      "sudo apt update",
       "sudo apt update",
       "sudo apt install -y tomcat9 awscli",
       "sudo chmod 777 /var/lib/tomcat9/webapps/",
