@@ -1,7 +1,7 @@
 #!/bin/bash
 sudo apt update -y
 sudo apt install -y maven default-jdk awscli
-mkdir -p ~/.ssh/
+mkdir -p /home/ubuntu/.ssh/
 aws s3 cp s3://avasekho.test.credentials/id_rsa /home/ubuntu/id_rsa
 aws s3 cp s3://avasekho.test.credentials/config /home/ubuntu/config
 mv /home/ubuntu/id_rsa /home/ubuntu/.ssh/id_rsa
